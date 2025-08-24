@@ -21,7 +21,7 @@ namespace Library.UserMicroservice.Api
 
             builder.Services.AddDbContext<UserDbContext>(options =>
             {
-                options.UseNpgsql(builder.Configuration.GetConnectionString("UserDbConnectionString"));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("UserMicroserviceDbConnectionStringDbConnectionString"));
             });
 
             builder.Logging.ClearProviders();

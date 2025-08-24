@@ -1,17 +1,6 @@
-using FluentValidation;
-using Library.UserMicroservice.Api.DTOs;
-using Library.UserMicroservice.Api.Extensions;
-using Library.UserMicroservice.Api.Validators;
-using Library.UserMicroservice.Application.Services;
-using Library.UserMicroservice.Application.Settings;
-using Library.UserMicroservice.Domain.Interfaces;
-using Library.UserMicroservice.Infrastructure.Contexts;
-using Library.UserMicroservice.Infrastructure.Repositories;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Identity;
 
-namespace Library.UserMicroservice.Api
+namespace Library.OrderMicroservice.Api
 {
     public class Program
     {

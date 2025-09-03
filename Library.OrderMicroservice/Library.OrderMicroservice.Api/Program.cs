@@ -1,4 +1,13 @@
+using FluentValidation;
+using Library.OrderMicroservice.Api.DTOs;
+using Library.OrderMicroservice.Api.Validators;
+using Library.OrderMicroservice.Application.Services;
+using Library.OrderMicroservice.Domain.Interfaces;
+using Library.OrderMicroservice.Infrastructure.Contexts;
+using Library.OrderMicroservice.Infrastructure.Repositories;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Library.OrderMicroservice.Api
 {
@@ -8,7 +17,7 @@ namespace Library.OrderMicroservice.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<UserDbContext>(options =>
+            builder.Services.AddDbContext<OrderDbContext>(options =>
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("UserMicroserviceDbConnectionString"));
             });
@@ -18,34 +27,7 @@ namespace Library.OrderMicroservice.Api
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(option =>
-            {
-                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
-                });
-                option.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                       new OpenApiSecurityScheme
-                         {
-                             Reference = new OpenApiReference
-                             {
-                                 Type = ReferenceType.SecurityScheme,
-                                 Id = "Bearer"
-                             }
-                         },
-                        new string[] {}
-                     }
-                });
-                option.UseAllOfToExtendReferenceSchemas();
-                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Some API v1", Version = "v1" });
-            });
+            builder.Services.AddSwaggerGen();
 
             builder.Services.AddMassTransit(x =>
             {
@@ -58,25 +40,19 @@ namespace Library.OrderMicroservice.Api
                     });
                 });
             });
-            builder.Services.AddScoped<IValidator<UserCreateDto>, UserCreateValidator>();
-            builder.Services.AddScoped<IValidator<UserLoginDto>, UserLoginValidator>();
+            builder.Services.AddScoped<IValidator<OrderDto>, OrderDtoValidator>();
+            builder.Services.AddScoped<IValidator<OrderItemDto>, OrderItemDtoValidator>();
 
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
-            builder.Services.AddScoped<JwtService>();
-            builder.Services.AddScoped<PasswordHasher>();
-            builder.Services.AddScoped<UserService>();
-
-            builder.Services.Configure<AuthSettings>(
-                builder.Configuration.GetSection(key: "AuthSettings"));
-            builder.Services.AddAuth(builder.Configuration);
+            builder.Services.AddScoped<OrderService>();
 
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "JWTAuthDemo v1"));
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

@@ -1,5 +1,4 @@
 ﻿using Library.Contracts;
-using Library.OrderMicroservice.Application.Contracts;
 using Library.OrderMicroservice.Domain.Interfaces;
 using Library.OrderMicroservice.Domain.Models;
 using MassTransit;
